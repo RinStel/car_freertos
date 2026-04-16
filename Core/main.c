@@ -43,6 +43,7 @@
 #include "task.h"
 
 /* TI includes */
+#include "ti/devices/msp/m0p/mspm0g350x.h"
 #include "ti_msp_dl_config.h"
 
 /*-----------------------------------------------------------*/
@@ -70,6 +71,9 @@ int main(void)
 static void prvSetupHardware(void)
 {
     SYSCFG_DL_init();
+
+    NVIC_ClearPendingIRQ(UART0_INT_IRQn);
+    NVIC_EnableIRQ(UART0_INT_IRQn);
 }
 /*-----------------------------------------------------------*/
 

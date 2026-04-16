@@ -2,6 +2,9 @@
 Debug/
 Release/
 
+# ------------------- 杂项 -------------------
+.codex
+
 # ----------- C gitignore tamplate -----------
 
 # Prerequisites

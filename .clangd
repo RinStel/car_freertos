@@ -1,11 +1,19 @@
-# This is an auto-generated file - do not add it to source-control
-
 CompileFlags:
-   CompilationDatabase: Debug/.clangd
+  CompilationDatabase: Debug/.clangd
+  Compiler: /home/zikun/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/bin/tiarmclang
+  Add:
+    - --target=arm-none-eabi
+    - -march=thumbv6m
+    - -mcpu=cortex-m0plus
+    - -mfloat-abi=soft
+    - -mlittle-endian
+    - -mthumb
+    - -D__ti_version__=1
 
 Diagnostics:
-   Suppress: '*'
+  Suppress:
+    - unknown-warning-option
+    - unused-command-line-argument
 
 InlayHints:
-   Enabled: No
-
+  Enabled: No

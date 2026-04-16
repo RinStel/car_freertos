@@ -25,22 +25,3 @@ AlignConsecutiveDeclarations: true
 AllowAllParametersOfDeclarationOnNextLine: true
 SpacesInParentheses: false
 SpaceBeforeParens: ControlStatements
-BreakBeforeBraces: Allman
-BraceWrapping:
-    AfterClass:      true
-    AfterControlStatement: true
-    AfterEnum:       true
-    AfterFunction:   true
-    AfterNamespace:  true
-    AfterStruct:     true
-    AfterUnion:      true
-    BeforeCatch:     true
-    BeforeElse:      true
-    IndentBraces:    false
-AlignAfterOpenBracket: Align
-AlignOperands: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
-AllowAllParametersOfDeclarationOnNextLine: true
-SpacesInParentheses: false
-SpaceBeforeParens: ControlStatements
