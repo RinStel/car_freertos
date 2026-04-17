@@ -20,8 +20,9 @@ const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
  * Write custom configuration values to the imported modules.
  */
 GPIO1.$name                          = "GPIO_LEDS";
-GPIO1.associatedPins[0].$name        = "USER_LED_1";
 GPIO1.associatedPins[0].assignedPin  = "0";
+GPIO1.associatedPins[0].$name        = "STACK_WARNING_LED";
+GPIO1.associatedPins[0].assignedPort = "PORTA";
 GPIO1.associatedPins[0].initialValue = "SET";
 GPIO1.associatedPins[0].pin.$assign  = "PA0";
 

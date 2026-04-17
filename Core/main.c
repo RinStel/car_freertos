@@ -40,6 +40,7 @@
 
 /* Kernel includes. */
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 
 /* TI includes */
@@ -53,7 +54,7 @@
  */
 static void prvSetupHardware(void);
 
-extern void main_blinky(void);
+extern void main_StackMonitor(void);
 
 /*-----------------------------------------------------------*/
 
@@ -62,9 +63,14 @@ int main(void)
     /* Prepare the hardware to run this demo. */
     prvSetupHardware();
 
-    main_blinky();
+    main_StackMonitor();
 
-    return 0;
+    /* Start the tasks. */
+    vTaskStartScheduler();
+
+    for (;;)
+    {
+    }
 }
 /*-----------------------------------------------------------*/
 
