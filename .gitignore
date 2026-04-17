@@ -4,6 +4,8 @@ Release/
 
 # ------------------- 杂项 -------------------
 .codex
+.settings/
+.vscode/
 
 # ----------- C gitignore tamplate -----------
 
