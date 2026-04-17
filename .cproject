@@ -35,15 +35,13 @@
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.ENDIAN_NESS__BIG_LITTLE.1115242262" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.ENDIAN_NESS__BIG_LITTLE" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.ENDIAN_NESS__BIG_LITTLE.MLITTLE_ENDIAN" valueType="enumerated"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.INCLUDE_PATH.1614390237" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.INCLUDE_PATH" valueType="includePath">
                                     <listOptionValue value="${SYSCONFIG_TOOL_INCLUDE_PATH}"/>
-                                    <listOptionValue value="${COM_TI_MSPM0_SDK_INCLUDE_PATH}"/>
                                     <listOptionValue value="${PROJECT_ROOT}"/>
                                     <listOptionValue value="${PROJECT_ROOT}/${ConfigName}"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/include"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/TI_ARM_CLANG/ARM_CM0"/>
+                                    <listOptionValue value="${COM_TI_MSPM0_SDK_INCLUDE_PATH}"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/third_party/CMSIS/Core/Include"/>
-                                    <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/kernel/freertos/Source/include"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source"/>
-                                    <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/posix/ticlang"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/include"/>
                                 </option>
@@ -68,9 +66,9 @@
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.REREAD_LIBS.2023538450" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.REREAD_LIBS" value="false" valueType="boolean"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.SEARCH_PATH.264690395" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.SEARCH_PATH" valueType="libPaths">
                                     <listOptionValue value="${SYSCONFIG_TOOL_LIBRARY_PATH}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_LIBRARY_PATH}"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source"/>
-                                    <listOptionValue value="${PROJECT_ROOT}"/>
                                     <listOptionValue value="${PROJECT_BUILD_DIR}/syscfg"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/lib"/>
                                 </option>
