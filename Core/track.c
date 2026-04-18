@@ -90,8 +90,20 @@ void vTrackUpdate(TrackData_t *xTrackData)
     }
     if (index < 0)
     {
-        // 没有找到有效点，保持上次位置不变
+        // 丢线
         xTrackData->status = TRACK_LINE_LOST;
+
+        if (xTrackData->_last_status != TRACK_LINE_LOST)
+        {
+            if (xTrackData->last_turn_direction > 0)
+            {
+                xTrackData->status = TRACK_LINE_LEFT_TURN;
+            }
+            else if (xTrackData->last_turn_direction < 0)
+            {
+                xTrackData->status = TRACK_LINE_RIGHT_TURN;
+            }
+        }
         return;
     }
 
@@ -117,8 +129,8 @@ void vTrackUpdate(TrackData_t *xTrackData)
     case TRACK_LINE_LOST:
         xTrackData->status = TRACK_LINE_NORMAL;
         break;
-    case TRACK_LINE_LEFT_TURN:
-    case TRACK_LINE_RIGHT_TURN:
+    case TRACK_LINE_LEFT:
+    case TRACK_LINE_RIGHT:
         if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
             xTrackData->status = TRACK_LINE_CROSS;
@@ -132,12 +144,22 @@ void vTrackUpdate(TrackData_t *xTrackData)
             xTrackData->status = xTrackData->_last_status;
         }
         break;
+    case TRACK_LINE_LEFT_TURN:
+    case TRACK_LINE_RIGHT_TURN:
+        if (abs(xTrackData->current_pos) <= TRACK_SENSOR_SPACE)
+        {
+            xTrackData->status = TRACK_LINE_NORMAL;
+        }
+        else
+        {
+            xTrackData->status = xTrackData->_last_status;
+        }
+        break;
     case TRACK_LINE_CROSS:
         if (left_index != GPIO_TRACE_SENSOR_NUM && right_index != -1 &&
             abs(xTrackData->current_pos) > TRACK_SENSOR_SPACE)
         {
-            xTrackData->status =
-                (xTrackData->current_pos < 0) ? TRACK_LINE_LEFT_TURN : TRACK_LINE_RIGHT_TURN;
+            xTrackData->status = (xTrackData->current_pos < 0) ? TRACK_LINE_LEFT : TRACK_LINE_RIGHT;
         }
         else
         {
@@ -145,19 +167,36 @@ void vTrackUpdate(TrackData_t *xTrackData)
         }
         break;
     case TRACK_LINE_NORMAL:
-        if (left_index == GPIO_TRACE_SENSOR_NUM && right_index != -1)
+        if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
-            xTrackData->status = TRACK_LINE_LEFT_TURN;
+            xTrackData->status = TRACK_LINE_CROSS;
+        }
+        else if (left_index == GPIO_TRACE_SENSOR_NUM && right_index != -1)
+        {
+            xTrackData->status = TRACK_LINE_LEFT;
         }
         else if (left_index != GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
-            xTrackData->status = TRACK_LINE_RIGHT_TURN;
+            xTrackData->status = TRACK_LINE_RIGHT;
         }
         else
         {
             xTrackData->status = TRACK_LINE_NORMAL;
         }
         break;
+    }
+
+    if (xTrackData->status == TRACK_LINE_LEFT || xTrackData->status == TRACK_LINE_LEFT_TURN)
+    {
+        xTrackData->last_turn_direction = 1;
+    }
+    else if (xTrackData->status == TRACK_LINE_RIGHT || xTrackData->status == TRACK_LINE_RIGHT_TURN)
+    {
+        xTrackData->last_turn_direction = -1;
+    }
+    else
+    {
+        xTrackData->last_turn_direction = 0;
     }
 }
 

@@ -11,6 +11,8 @@
 typedef enum
 {
     TRACK_LINE_NORMAL = 0,
+    TRACK_LINE_LEFT,
+    TRACK_LINE_RIGHT,
     TRACK_LINE_LEFT_TURN,
     TRACK_LINE_RIGHT_TURN,
     TRACK_LINE_CROSS,
@@ -21,6 +23,7 @@ typedef struct
 {
     int8_t           current_pos;
     TrackLineState_t status;
+    int8_t          last_turn_direction; // 检测到的最后一次可能的转弯方向，0:无，>0:左，<0:右
 
     int8_t           _last_pos;
     TrackLineState_t _last_status;
