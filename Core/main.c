@@ -55,6 +55,7 @@
 static void prvSetupHardware(void);
 
 extern void main_StackMonitor(void);
+extern void main_Control(void);
 
 /*-----------------------------------------------------------*/
 
@@ -64,6 +65,7 @@ int main(void)
     prvSetupHardware();
 
     main_StackMonitor();
+    main_Control();
 
     /* Start the tasks. */
     vTaskStartScheduler();

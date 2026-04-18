@@ -11,6 +11,7 @@
  */
 const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
 const GPIO1         = GPIO.addInstance();
+const GPIO2         = GPIO.addInstance();
 const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
 const UART          = scripting.addModule("/ti/driverlib/UART", {}, false);
 const UART1         = UART.addInstance();
@@ -28,15 +29,53 @@ GPIO1.associatedPins[0].pin.$assign  = "PA0";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 
+GPIO2.$name                          = "GPIO_TRACE";
+GPIO2.associatedPins.create(7);
+GPIO2.associatedPins[0].direction    = "INPUT";
+GPIO2.associatedPins[0].assignedPort = "PORTB";
+GPIO2.associatedPins[0].assignedPin  = "19";
+GPIO2.associatedPins[0].$name        = "L3";
+GPIO2.associatedPins[1].direction    = "INPUT";
+GPIO2.associatedPins[1].assignedPin  = "22";
+GPIO2.associatedPins[1].assignedPort = "PORTA";
+GPIO2.associatedPins[1].$name        = "L2";
+GPIO2.associatedPins[2].direction    = "INPUT";
+GPIO2.associatedPins[2].assignedPort = "PORTB";
+GPIO2.associatedPins[2].assignedPin  = "18";
+GPIO2.associatedPins[2].$name        = "L1";
+GPIO2.associatedPins[3].direction    = "INPUT";
+GPIO2.associatedPins[3].assignedPort = "PORTA";
+GPIO2.associatedPins[3].assignedPin  = "18";
+GPIO2.associatedPins[3].$name        = "C";
+GPIO2.associatedPins[4].direction    = "INPUT";
+GPIO2.associatedPins[4].assignedPort = "PORTA";
+GPIO2.associatedPins[4].assignedPin  = "24";
+GPIO2.associatedPins[4].$name        = "R1";
+GPIO2.associatedPins[5].direction    = "INPUT";
+GPIO2.associatedPins[5].assignedPort = "PORTA";
+GPIO2.associatedPins[5].assignedPin  = "17";
+GPIO2.associatedPins[5].$name        = "R2";
+GPIO2.associatedPins[6].direction    = "INPUT";
+GPIO2.associatedPins[6].assignedPort = "PORTA";
+GPIO2.associatedPins[6].assignedPin  = "16";
+GPIO2.associatedPins[6].$name        = "R3";
+
 SYSCTL.clockTreeEn = true;
 
-UART1.$name                    = "UART_0";
-UART1.enabledInterrupts        = ["RX"];
-UART1.targetBaudRate           = 115200;
-UART1.peripheral.rxPin.$assign = "PA11";
-UART1.peripheral.txPin.$assign = "PA10";
-UART1.txPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
-UART1.rxPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric1";
+UART1.enabledInterrupts                = ["RX"];
+UART1.targetBaudRate                   = 115200;
+UART1.$name                            = "UART_DEBUG";
+UART1.peripheral.rxPin.$assign         = "PA11";
+UART1.peripheral.txPin.$assign         = "PA10";
+UART1.txPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
+UART1.txPinConfig.direction            = scripting.forceWrite("OUTPUT");
+UART1.txPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART1.txPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART1.txPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART1.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
+UART1.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART1.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART1.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 
 ProjectConfig.genDisable = true;
 scripting.suppress("Project Configuration File generation is disabled for this project\\. SysConfig Project Migration is not currently supported for this project\\.", ProjectConfig);
@@ -46,7 +85,14 @@ scripting.suppress("Project Configuration File generation is disabled for this p
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-Board.peripheral.$suggestSolution          = "DEBUGSS";
-Board.peripheral.swclkPin.$suggestSolution = "PA20";
-Board.peripheral.swdioPin.$suggestSolution = "PA19";
-UART1.peripheral.$suggestSolution          = "UART0";
+Board.peripheral.$suggestSolution            = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution   = "PA20";
+Board.peripheral.swdioPin.$suggestSolution   = "PA19";
+GPIO2.associatedPins[0].pin.$suggestSolution = "PB19";
+GPIO2.associatedPins[1].pin.$suggestSolution = "PA22";
+GPIO2.associatedPins[2].pin.$suggestSolution = "PB18";
+GPIO2.associatedPins[3].pin.$suggestSolution = "PA18";
+GPIO2.associatedPins[4].pin.$suggestSolution = "PA24";
+GPIO2.associatedPins[5].pin.$suggestSolution = "PA17";
+GPIO2.associatedPins[6].pin.$suggestSolution = "PA16";
+UART1.peripheral.$suggestSolution            = "UART0";

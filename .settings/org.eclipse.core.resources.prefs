@@ -1,4 +1,8 @@
 eclipse.preferences.version=1
+encoding//Debug/BSP/gpio/subdir_rules.mk=UTF-8
+encoding//Debug/BSP/gpio/subdir_vars.mk=UTF-8
+encoding//Debug/BSP/trace/subdir_rules.mk=UTF-8
+encoding//Debug/BSP/trace/subdir_vars.mk=UTF-8
 encoding//Debug/BSP/uart/subdir_rules.mk=UTF-8
 encoding//Debug/BSP/uart/subdir_vars.mk=UTF-8
 encoding//Debug/Core/subdir_rules.mk=UTF-8
