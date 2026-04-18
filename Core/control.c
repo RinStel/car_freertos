@@ -23,13 +23,31 @@ void prvControlTask(void *argument);
 
 void prvControlTask(void *argument)
 {
+    TrackData_t xTrackData;
     for (;;)
     {
-        TrackData_t xTrackData;
         vTrackUpdate(&xTrackData);
-        printf("%d", xTrackData.current_pos);
+        printf("%d, ", xTrackData.current_pos);
+        switch (xTrackData.status)
+        {
+        case TRACK_LINE_NORMAL:
+            printf("NORMAL\n");
+            break;
+        case TRACK_LINE_LEFT_TURN:
+            printf("LEFT\n");
+            break;
+        case TRACK_LINE_RIGHT_TURN:
+            printf("RIGHT\n");
+            break;
+        case TRACK_LINE_CROSS:
+            printf("CROSS\n");
+            break;
+        case TRACK_LINE_LOST:
+            printf("LOST\n");
+            break;
+        }
 
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(1000 / 50));
     }
 }
 

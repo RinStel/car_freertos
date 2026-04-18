@@ -8,11 +8,22 @@
 
 /*-----------------------------------------------------------*/
 
+typedef enum
+{
+    TRACK_LINE_NORMAL = 0,
+    TRACK_LINE_LEFT_TURN,
+    TRACK_LINE_RIGHT_TURN,
+    TRACK_LINE_CROSS,
+    TRACK_LINE_LOST
+} TrackLineState_t;
+
 typedef struct
 {
-    int16_t current_pos;
-    int16_t next_pred_pos;
-    uint8_t is_low_confidence;
+    int8_t           current_pos;
+    TrackLineState_t status;
+
+    int8_t           _last_pos;
+    TrackLineState_t _last_status;
 } TrackData_t;
 
 /*-----------------------------------------------------------*/
