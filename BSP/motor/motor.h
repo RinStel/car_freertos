@@ -10,13 +10,13 @@ typedef enum
 {
     ENCODER_LEFT = 0,
     ENCODER_RIGHT
-} Encoder_t;
+} EncoderInst_t;
 
 typedef struct
 {
-    Encoder_t type;
-    int32_t   count;
-    uint8_t   preState;
+    EncoderInst_t inst;
+    int32_t       count;
+    uint8_t       preState;
 } EncoderData_t;
 
 /*-----------------------------------------------------------*/
@@ -27,7 +27,7 @@ void vMotorStop(void);
 
 /*-----------------------------------------------------------*/
 
-int32_t vMotorEncoderGetCount(Encoder_t type);
+int32_t vMotorEncoderGetCount(EncoderInst_t type);
 
 void vMotorEncoderLeft_IRQHandler(void);
 void vMotorEncoderRight_IRQHandler(void);

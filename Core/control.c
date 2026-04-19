@@ -8,8 +8,8 @@
 /* TI includes. */
 #include "ti_msp_dl_config.h"
 
-#include "free_timer.h"
 #include "motor.h"
+#include "motor_encoder.h"
 #include "track.h"
 
 /*-----------------------------------------------------------*/
@@ -61,8 +61,10 @@ void prvControlTask(void *argument)
         vTrackUpdate(&xTrackData);
         printf("%3d, ", xTrackData.current_pos);
         // printf("%u, ", vFreeTimerStart());
-        printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_LEFT));
-        printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_RIGHT));
+        // printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_LEFT));
+        // printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_RIGHT));
+        printf("%ld, ", (long) xMotorEncoderData.left_speed);
+        printf("%ld, ", (long) xMotorEncoderData.right_speed);
         switch (xTrackData.status)
         {
         case TRACK_LINE_NORMAL:
@@ -92,5 +94,6 @@ void prvControlTask(void *argument)
 
 void main_Control(void)
 {
-    xTaskCreate(prvControlTask, "Control", 512, NULL, 7, &xControlTaskHandle);
+    BaseType_t status = xTaskCreate(prvControlTask, "Control", 512, NULL, 7, &xControlTaskHandle);
+    configASSERT(status == pdPASS);
 }

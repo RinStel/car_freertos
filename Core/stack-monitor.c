@@ -43,6 +43,7 @@ static void prvStackMonitorTask(void *argument)
 
 void main_StackMonitor(void)
 {
-    xTaskCreate(prvStackMonitorTask, "StackMonitor", configMINIMAL_STACK_SIZE, NULL,
-                tskIDLE_PRIORITY + 1, &xMonitorTaskHandle);
+    BaseType_t status = xTaskCreate(prvStackMonitorTask, "StackMonitor", configMINIMAL_STACK_SIZE,
+                                    NULL, tskIDLE_PRIORITY + 1, &xMonitorTaskHandle);
+    configASSERT(status == pdPASS);
 }

@@ -38,12 +38,12 @@ void vMotorInit(void)
     DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_STBY_PIN);
 
     /* 初始化编码器类型与初始相位, 避免第一次中断产生计数偏移 */
-    xEncoderLeft.type     = ENCODER_LEFT;
+    xEncoderLeft.inst     = ENCODER_LEFT;
     xEncoderLeft.count    = 0;
     xEncoderLeft.preState = (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1A_PIN) ? 0b10U : 0) |
                             (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1B_PIN) ? 0b01U : 0);
 
-    xEncoderRight.type     = ENCODER_RIGHT;
+    xEncoderRight.inst     = ENCODER_RIGHT;
     xEncoderRight.count    = 0;
     xEncoderRight.preState = (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E2A_PIN) ? 0b10U : 0) |
                              (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E2B_PIN) ? 0b01U : 0);
@@ -101,7 +101,7 @@ void vMotorStop(void)
 void prvMotorEncoderUpdate(volatile EncoderData_t *encoder)
 {
     uint8_t currentState = 0;
-    if (encoder->type == ENCODER_LEFT)
+    if (encoder->inst == ENCODER_LEFT)
     {
         currentState |= DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1A_PIN) ? 0b10U : 0;
         currentState |= DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1B_PIN) ? 0b01U : 0;
@@ -117,9 +117,9 @@ void prvMotorEncoderUpdate(volatile EncoderData_t *encoder)
     encoder->preState = currentState;
 }
 
-int32_t vMotorEncoderGetCount(Encoder_t type)
+int32_t vMotorEncoderGetCount(EncoderInst_t encoder)
 {
-    if (type == ENCODER_LEFT)
+    if (encoder == ENCODER_LEFT)
     {
         return xEncoderLeft.count;
     }

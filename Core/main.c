@@ -53,6 +53,7 @@ static void prvSetupHardware(void);
 
 extern void main_StackMonitor(void);
 extern void main_Control(void);
+extern void main_MotorEncoderUpdater(void);
 
 /*-----------------------------------------------------------*/
 
@@ -63,6 +64,7 @@ int main(void)
 
     main_StackMonitor();
     main_Control();
+    main_MotorEncoderUpdater();
 
     /* Start the tasks. */
     vTaskStartScheduler();
