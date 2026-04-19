@@ -1,7 +1,7 @@
 /* TI includes. */
 #include "ti_msp_dl_config.h"
 
-#include "BSP/gpio/gpio.h"
+#include "gpio.h"
 #include <stdint.h>
 
 #include "track.h"

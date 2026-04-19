@@ -1,5 +1,6 @@
 #include "stdio.h"
 
+#include "ti/driverlib/dl_uart_main.h"
 #include "ti_msp_dl_config.h"
 
 static char sEchoData;
@@ -10,7 +11,7 @@ void UART_DEBUG_INST_IRQHandler(void)
     {
     case DL_UART_MAIN_IIDX_RX:
         sEchoData = DL_UART_Main_receiveData(UART_DEBUG_INST);
-        DL_UART_Main_transmitData(UART_DEBUG_INST, sEchoData);
+        DL_UART_Main_transmitDataBlocking(UART_DEBUG_INST, sEchoData);
         break;
     default:
         break;
