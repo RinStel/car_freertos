@@ -8,6 +8,7 @@
 /* TI includes. */
 #include "ti_msp_dl_config.h"
 
+#include "motor.h"
 #include "track.h"
 
 /*-----------------------------------------------------------*/
@@ -29,8 +30,27 @@ void prvControlTask(void *argument)
         .last_turn_direction = 0,
     };
 
+    // Test
+    vMotorInit();
+    int8_t speed      = 20;
+    int8_t speed_step = 1;
+
     for (;;)
     {
+        // Test
+        vMotorSetSpeed(speed, speed);
+        speed += speed_step;
+        if (speed >= 100)
+        {
+            speed      = 99;
+            speed_step = -speed_step;
+        }
+        else if (speed <= -100)
+        {
+            speed      = -99;
+            speed_step = -speed_step;
+        }
+
         vTrackUpdate(&xTrackData);
         printf("%3d, ", xTrackData.current_pos);
         switch (xTrackData.status)
@@ -58,7 +78,7 @@ void prvControlTask(void *argument)
             break;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000 / 50));
+        vTaskDelay(pdMS_TO_TICKS(1000 / 10));
     }
 }
 

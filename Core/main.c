@@ -35,9 +35,6 @@
  * This file implements the code that is not demo specific.
  */
 
-/* Standard includes. */
-#include <stdio.h>
-
 /* Kernel includes. */
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -80,8 +77,11 @@ static void prvSetupHardware(void)
 {
     SYSCFG_DL_init();
 
-    NVIC_ClearPendingIRQ(UART0_INT_IRQn);
-    NVIC_EnableIRQ(UART0_INT_IRQn);
+    NVIC_ClearPendingIRQ(UART_DEBUG_INST_INT_IRQN);
+    NVIC_EnableIRQ(UART_DEBUG_INST_INT_IRQN);
+
+    NVIC_ClearPendingIRQ(GPIO_MOTOR_INT_IRQN);
+    NVIC_EnableIRQ(GPIO_MOTOR_INT_IRQN);
 }
 /*-----------------------------------------------------------*/
 
