@@ -1,8 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-/* TI includes. */
-#include "ti_msp_dl_config.h"
+// #include "ti_msp_dl_config.h"
+#include <stdint.h>
 
 /*-----------------------------------------------------------*/
 
@@ -15,7 +15,7 @@ typedef enum
 typedef struct
 {
     Encoder_t type;
-    uint32_t  count;
+    int32_t   count;
     uint8_t   preState;
 } EncoderData_t;
 
@@ -27,7 +27,7 @@ void vMotorStop(void);
 
 /*-----------------------------------------------------------*/
 
-uint32_t vMotorEncoderGetCount(Encoder_t type);
+int32_t vMotorEncoderGetCount(Encoder_t type);
 
 void vMotorEncoderLeft_IRQHandler(void);
 void vMotorEncoderRight_IRQHandler(void);

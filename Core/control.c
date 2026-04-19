@@ -8,6 +8,7 @@
 /* TI includes. */
 #include "ti_msp_dl_config.h"
 
+#include "free_timer.h"
 #include "motor.h"
 #include "track.h"
 
@@ -24,6 +25,9 @@ void prvControlTask(void *argument);
 
 void prvControlTask(void *argument)
 {
+    TickType_t       xLastWakeTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / 50);
+
     TrackData_t xTrackData = {
         .current_pos         = 0,
         .status              = TRACK_LINE_NORMAL,
@@ -35,8 +39,11 @@ void prvControlTask(void *argument)
     int8_t speed      = 20;
     int8_t speed_step = 1;
 
+    xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
+
         // Test
         vMotorSetSpeed(speed, speed);
         speed += speed_step;
@@ -53,6 +60,9 @@ void prvControlTask(void *argument)
 
         vTrackUpdate(&xTrackData);
         printf("%3d, ", xTrackData.current_pos);
+        // printf("%u, ", vFreeTimerStart());
+        printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_LEFT));
+        printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_RIGHT));
         switch (xTrackData.status)
         {
         case TRACK_LINE_NORMAL:
@@ -77,13 +87,10 @@ void prvControlTask(void *argument)
             printf("LOST\n");
             break;
         }
-
-        vTaskDelay(pdMS_TO_TICKS(1000 / 10));
     }
 }
 
 void main_Control(void)
 {
-    xTaskCreate(prvControlTask, "Control", 512, NULL, configMAX_PRIORITIES - 4,
-                &xControlTaskHandle);
+    xTaskCreate(prvControlTask, "Control", 512, NULL, 7, &xControlTaskHandle);
 }

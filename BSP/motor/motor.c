@@ -9,7 +9,7 @@
 
 /*-----------------------------------------------------------*/
 
-static volatile EncoderData_t xEncoderLeft = {0, 0}, xEncoderRight = {0, 0};
+static volatile EncoderData_t xEncoderLeft, xEncoderRight;
 
 /*
  * 编码器的状态转换表，根据先前状态和当前状态计算增量
@@ -22,7 +22,7 @@ static volatile EncoderData_t xEncoderLeft = {0, 0}, xEncoderRight = {0, 0};
  * 正向: 00 -> 10 -> 11 -> 01 -> 00
  * 反向: 00 -> 01 -> 11 -> 10 -> 00
  */
-static const uint8_t ucEncoderStateTable[4][4] = {
+static const int8_t ucEncoderStateTable[4][4] = {
     {0, -1, 1, 0},
     {1, 0, 0, -1},
     {-1, 0, 0, 1},
@@ -36,6 +36,18 @@ static const uint8_t ucEncoderStateTable[4][4] = {
 void vMotorInit(void)
 {
     DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_STBY_PIN);
+
+    /* 初始化编码器类型与初始相位, 避免第一次中断产生计数偏移 */
+    xEncoderLeft.type     = ENCODER_LEFT;
+    xEncoderLeft.count    = 0;
+    xEncoderLeft.preState = (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1A_PIN) ? 0b10U : 0) |
+                            (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E1B_PIN) ? 0b01U : 0);
+
+    xEncoderRight.type     = ENCODER_RIGHT;
+    xEncoderRight.count    = 0;
+    xEncoderRight.preState = (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E2A_PIN) ? 0b10U : 0) |
+                             (DL_GPIO_readPins(GPIO_MOTOR_PORT, GPIO_MOTOR_E2B_PIN) ? 0b01U : 0);
+
     DL_TimerG_startCounter(MOTOR_PWM_INST);
 }
 
@@ -105,7 +117,7 @@ void prvMotorEncoderUpdate(volatile EncoderData_t *encoder)
     encoder->preState = currentState;
 }
 
-uint32_t vMotorEncoderGetCount(Encoder_t type)
+int32_t vMotorEncoderGetCount(Encoder_t type)
 {
     if (type == ENCODER_LEFT)
     {
