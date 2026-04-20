@@ -5,9 +5,11 @@
 
 typedef struct
 {
+    int32_t left_count;
     int32_t left_dist;
     float_t left_speed;
 
+    int32_t right_count;
     int32_t right_dist;
     float_t right_speed;
 } MotorEncoderData_t;

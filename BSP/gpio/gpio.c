@@ -38,17 +38,18 @@ void GROUP1_IRQHandler(void)
             {
             case GPIO_MOTOR_E1A_IIDX:
                 DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E1A_PIN);
-            case GPIO_MOTOR_E1B_IIDX:
-                DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E1B_PIN);
-
                 vMotorEncoderLeft_IRQHandler();
                 break;
-
+            case GPIO_MOTOR_E1B_IIDX:
+                DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E1B_PIN);
+                vMotorEncoderLeft_IRQHandler();
+                break;
             case GPIO_MOTOR_E2A_IIDX:
                 DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E2A_PIN);
+                vMotorEncoderRight_IRQHandler();
+                break;
             case GPIO_MOTOR_E2B_IIDX:
                 DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E2B_PIN);
-
                 vMotorEncoderRight_IRQHandler();
                 break;
             default:

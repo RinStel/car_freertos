@@ -36,8 +36,8 @@ void prvControlTask(void *argument)
 
     // Test
     vMotorInit();
-    int8_t speed      = 20;
-    int8_t speed_step = 1;
+    int8_t speed = 40;
+    // int8_t speed_step = 1;
 
     xLastWakeTime = xTaskGetTickCount();
     for (;;)
@@ -46,23 +46,23 @@ void prvControlTask(void *argument)
 
         // Test
         vMotorSetSpeed(speed, speed);
-        speed += speed_step;
-        if (speed >= 100)
-        {
-            speed      = 99;
-            speed_step = -speed_step;
-        }
-        else if (speed <= -100)
-        {
-            speed      = -99;
-            speed_step = -speed_step;
-        }
+        // speed += speed_step;
+        // if (speed >= 100)
+        // {
+        //     speed      = 99;
+        //     speed_step = -speed_step;
+        // }
+        // else if (speed <= -100)
+        // {
+        //     speed      = -99;
+        //     speed_step = -speed_step;
+        // }
 
         vTrackUpdate(&xTrackData);
         printf("%3d, ", xTrackData.current_pos);
         // printf("%u, ", vFreeTimerStart());
-        // printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_LEFT));
-        // printf("%ld, ", (long) vMotorEncoderGetCount(ENCODER_RIGHT));
+        printf("%ld, ", (long) xMotorEncoderData.left_dist);
+        printf("%ld, ", (long) xMotorEncoderData.right_dist);
         printf("%ld, ", (long) xMotorEncoderData.left_speed);
         printf("%ld, ", (long) xMotorEncoderData.right_speed);
         switch (xTrackData.status)
@@ -94,6 +94,7 @@ void prvControlTask(void *argument)
 
 void main_Control(void)
 {
-    BaseType_t status = xTaskCreate(prvControlTask, "Control", 512, NULL, 7, &xControlTaskHandle);
+    BaseType_t status = xTaskCreate(prvControlTask, "Control", configMINIMAL_STACK_SIZE + 128, NULL,
+                                    7, &xControlTaskHandle);
     configASSERT(status == pdPASS);
 }

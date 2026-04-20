@@ -5,7 +5,7 @@
 
 /*-----------------------------------------------------------*/
 
-#define MOTOR_MAX_PWM_DUTY (1024 * 25 / 100) // 25% 占空比对应的计数值
+#define MOTOR_MAX_PWM_DUTY (1024 * 30 / 100) // 30% 占空比对应的计数值
 
 /*-----------------------------------------------------------*/
 
@@ -123,10 +123,7 @@ int32_t vMotorEncoderGetCount(EncoderInst_t encoder)
     {
         return xEncoderLeft.count;
     }
-    else
-    {
-        return xEncoderRight.count;
-    }
+    return xEncoderRight.count;
 }
 
 void vMotorEncoderLeft_IRQHandler(void)
