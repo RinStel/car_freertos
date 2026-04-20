@@ -46,6 +46,12 @@
 
 /*-----------------------------------------------------------*/
 
+#if (configCHECK_FOR_STACK_OVERFLOW)
+volatile TaskHandle_t g_stackOverflowTask = NULL;
+volatile const char * g_stackOverflowTaskName = NULL;
+volatile char g_stackOverflowTaskNameBuf[ configMAX_TASK_NAME_LEN ] = { 0 };
+#endif
+
 /*
  * Set up the hardware ready to run this demo.
  */
@@ -132,16 +138,30 @@ static void prvSetupHardware(void)
  *  weak, and will be used by default, unless the application specifically
  *  provides its own hook function.
  */
-#if defined(__IAR_SYSTEMS_ICC__)
-__weak void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
-#elif (defined(__TI_COMPILER_VERSION__))
-#pragma WEAK(vApplicationStackOverflowHook)
 void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
-#elif (defined(__GNUC__) || defined(__ti_version__))
-void __attribute__((weak)) vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
-#endif
 {
-    /* default to spin upon stack overflow */
+    /* Strong definition to override weak hooks in middleware.
+     * Record culprit for debugger/ROV inspection, then halt.
+     */
+    taskDISABLE_INTERRUPTS();
+
+    g_stackOverflowTask = pxTask;
+    g_stackOverflowTaskName = pcTaskName;
+
+    if (pcTaskName != NULL)
+    {
+        for (unsigned int i = 0; i < (unsigned int)(configMAX_TASK_NAME_LEN - 1U); i++)
+        {
+            char c = pcTaskName[i];
+            g_stackOverflowTaskNameBuf[i] = c;
+            if (c == '\0')
+            {
+                break;
+            }
+        }
+        g_stackOverflowTaskNameBuf[configMAX_TASK_NAME_LEN - 1U] = '\0';
+    }
+
     while (1)
     {
     }
