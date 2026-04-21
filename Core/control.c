@@ -8,6 +8,7 @@
 /* TI includes. */
 #include "ti_msp_dl_config.h"
 
+#include "hc_sr04.h"
 #include "motor.h"
 #include "motor_encoder.h"
 #include "track.h"
@@ -36,7 +37,7 @@ void prvControlTask(void *argument)
 
     // Test
     vMotorInit();
-    int8_t speed = 40;
+    int8_t speed = 25;
     // int8_t speed_step = 1;
 
     xLastWakeTime = xTaskGetTickCount();
@@ -65,6 +66,7 @@ void prvControlTask(void *argument)
         printf("%ld, ", (long) xMotorEncoderData.right_dist);
         printf("%ld, ", (long) xMotorEncoderData.left_speed);
         printf("%ld, ", (long) xMotorEncoderData.right_speed);
+        printf("%d, ", usHCSR04Distance_mm);
         switch (xTrackData.status)
         {
         case TRACK_LINE_NORMAL:

@@ -3,6 +3,7 @@
 
 #include "gpio.h"
 
+#include "hc_sr04.h"
 #include "motor.h"
 
 /*-----------------------------------------------------------*/
@@ -29,7 +30,7 @@ void GROUP1_IRQHandler(void)
 
     switch (groupIidx)
     {
-    case GPIO_MOTOR_INT_IIDX: /* GPIOB in Group1 */
+    case GPIO_MULTIPLE_GPIOB_INT_IIDX: /* GPIOB in Group1 */
     {
         DL_GPIO_IIDX gpioIidx;
         while ((gpioIidx = DL_GPIO_getPendingInterrupt(GPIO_MOTOR_PORT)) != DL_GPIO_IIDX_NO_INTR)
@@ -52,6 +53,12 @@ void GROUP1_IRQHandler(void)
                 DL_GPIO_clearInterruptStatus(GPIO_MOTOR_PORT, GPIO_MOTOR_E2B_PIN);
                 vMotorEncoderRight_IRQHandler();
                 break;
+
+            case GPIO_HCSR04_ECHO_IIDX:
+                DL_GPIO_clearInterruptStatus(GPIO_HCSR04_PORT, GPIO_HCSR04_ECHO_PIN);
+                vHCSR04Echo_IRQHandler();
+                break;
+
             default:
                 break;
             }

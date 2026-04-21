@@ -25,16 +25,6 @@
  * 1 tab == 4 spaces!
  */
 
-/******************************************************************************
- * This project provides a simple blinky style project.
- * The simply blinky demo is implemented and described in main_blinky.c.
- *
- * The blinky demo uses FreeRTOS's tickless idle mode to reduce power
- * consumption.
- *
- * This file implements the code that is not demo specific.
- */
-
 /* Kernel includes. */
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -60,6 +50,7 @@ static void prvSetupHardware(void);
 extern void main_StackMonitor(void);
 extern void main_Control(void);
 extern void main_MotorEncoderUpdater(void);
+extern void main_HCSR04(void);
 
 /*-----------------------------------------------------------*/
 
@@ -69,6 +60,7 @@ int main(void)
     prvSetupHardware();
 
     main_StackMonitor();
+    main_HCSR04();
     main_Control();
     main_MotorEncoderUpdater();
 
@@ -88,8 +80,8 @@ static void prvSetupHardware(void)
     NVIC_ClearPendingIRQ(UART_DEBUG_INST_INT_IRQN);
     NVIC_EnableIRQ(UART_DEBUG_INST_INT_IRQN);
 
-    NVIC_ClearPendingIRQ(GPIO_MOTOR_INT_IRQN);
-    NVIC_EnableIRQ(GPIO_MOTOR_INT_IRQN);
+    NVIC_ClearPendingIRQ(GPIO_MULTIPLE_GPIOB_INT_IRQN);
+    NVIC_EnableIRQ(GPIO_MULTIPLE_GPIOB_INT_IRQN);
 }
 /*-----------------------------------------------------------*/
 
