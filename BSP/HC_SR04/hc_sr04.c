@@ -8,6 +8,12 @@
 
 /*-----------------------------------------------------------*/
 
+#define HCSR04_TASK_PRIORITY 4U
+#define HCSR04_TASK_STACK_WORDS configMINIMAL_STACK_SIZE
+#define HCSR04_TRIGGER_PULSE_US 10U
+
+/*-----------------------------------------------------------*/
+
 #define HCSR04_MAX_DISTANCE_MM 3000U
 
 /*-----------------------------------------------------------*/
@@ -27,7 +33,7 @@ void vHCSR04Trigger(void)
     ucHCSR04EchoActive = 0U;
     // 发送至少10us的高电平触发信号
     DL_GPIO_setPins(GPIO_HCSR04_PORT, GPIO_HCSR04_TRIG_PIN);
-    vTaskDelay(1); // 1ms > 10us
+    DL_Common_delayCycles((CPUCLK_FREQ / 1000000U) * HCSR04_TRIGGER_PULSE_US);
     DL_GPIO_clearPins(GPIO_HCSR04_PORT, GPIO_HCSR04_TRIG_PIN);
 }
 
@@ -58,6 +64,8 @@ void vHCSR04Echo_IRQHandler(void)
 
 static void prvHCSR04Task(void *argument)
 {
+    (void) argument;
+
     const TickType_t xFrequency = pdMS_TO_TICKS(1000 / 10); // 10Hz
     TickType_t       xLastWakeTime;
 
@@ -71,7 +79,7 @@ static void prvHCSR04Task(void *argument)
 
 void main_HCSR04()
 {
-    BaseType_t status =
-        xTaskCreate(prvHCSR04Task, "HCSR04", configMINIMAL_STACK_SIZE, NULL, 4, &xHCSR04TaskHandle);
+    BaseType_t status = xTaskCreate(prvHCSR04Task, "HC-SR04", HCSR04_TASK_STACK_WORDS, NULL,
+                                    HCSR04_TASK_PRIORITY, &xHCSR04TaskHandle);
     configASSERT(status == pdPASS);
 }

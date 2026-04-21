@@ -11,6 +11,11 @@
 
 /*-----------------------------------------------------------*/
 
+#define MOTOR_ENCODER_TASK_PRIORITY 8U
+#define MOTOR_ENCODER_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 64U)
+
+/*-----------------------------------------------------------*/
+
 // 500线GMR编码器
 // 使用AB两相并在上升/下降沿都计数（x4），每圈计数=500*4=2000
 // 编码器连接在电机轴上，减速比1:28，则每转车轮计数=2000*28=56000
@@ -27,7 +32,7 @@
 
 MotorEncoderData_t xMotorEncoderData;
 
-TaskHandle_t xEncoderUpdaterTaskHandle;
+TaskHandle_t xMotorEncoderUpdaterTaskHandle;
 
 /*-----------------------------------------------------------*/
 
@@ -91,8 +96,9 @@ static void prvMotorEncoderUpdater(void *argument)
 
 void main_MotorEncoderUpdater(void)
 {
-    BaseType_t status = xTaskCreate(prvMotorEncoderUpdater, "EncoderUpdater",
-                                    configMINIMAL_STACK_SIZE + 64, &xMotorEncoderData, 8,
-                                    &xEncoderUpdaterTaskHandle);
+    BaseType_t status =
+        xTaskCreate(prvMotorEncoderUpdater, "MotorEncoder", MOTOR_ENCODER_TASK_STACK_WORDS,
+                    &xMotorEncoderData, MOTOR_ENCODER_TASK_PRIORITY,
+                    &xMotorEncoderUpdaterTaskHandle);
     configASSERT(status == pdPASS);
 }

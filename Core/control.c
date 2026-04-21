@@ -15,6 +15,12 @@
 
 /*-----------------------------------------------------------*/
 
+#define CONTROL_TASK_PRIORITY 7U
+#define CONTROL_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
+#define CONTROL_LOG_EVERY_N_CYCLES 1U
+
+/*-----------------------------------------------------------*/
+
 TaskHandle_t xControlTaskHandle;
 
 /*-----------------------------------------------------------*/
@@ -26,6 +32,8 @@ void prvControlTask(void *argument);
 
 void prvControlTask(void *argument)
 {
+    (void) argument;
+
     TickType_t       xLastWakeTime;
     const TickType_t xFrequency = pdMS_TO_TICKS(1000 / 50);
 
@@ -96,7 +104,7 @@ void prvControlTask(void *argument)
 
 void main_Control(void)
 {
-    BaseType_t status = xTaskCreate(prvControlTask, "Control", configMINIMAL_STACK_SIZE + 128, NULL,
-                                    7, &xControlTaskHandle);
+    BaseType_t status = xTaskCreate(prvControlTask, "Control", CONTROL_TASK_STACK_WORDS, NULL,
+                                    CONTROL_TASK_PRIORITY, &xControlTaskHandle);
     configASSERT(status == pdPASS);
 }
