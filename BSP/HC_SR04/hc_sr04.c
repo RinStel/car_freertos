@@ -10,7 +10,7 @@
 
 #define HCSR04_TASK_PRIORITY 4U
 #define HCSR04_TASK_STACK_WORDS configMINIMAL_STACK_SIZE
-#define HCSR04_TRIGGER_PULSE_US 10U
+#define HCSR04_TRIGGER_PULSE_US 13U
 
 /*-----------------------------------------------------------*/
 
