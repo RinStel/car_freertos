@@ -41,6 +41,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/BSP/motor"/>
                                     <listOptionValue value="${PROJECT_ROOT}/BSP/uart"/>
                                     <listOptionValue value="${PROJECT_ROOT}/BSP/HC_SR04"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Core"/>
                                     <listOptionValue value="${PROJECT_ROOT}/System/free_timer"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/include"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/TI_ARM_CLANG/ARM_CM0"/>

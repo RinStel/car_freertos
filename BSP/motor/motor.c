@@ -2,10 +2,7 @@
 #include "ti_msp_dl_config.h"
 
 #include "motor.h"
-
-/*-----------------------------------------------------------*/
-
-#define MOTOR_MAX_PWM_DUTY (1024 * 30 / 100) // 30% 占空比对应的计数值
+#include "utils.h"
 
 /*-----------------------------------------------------------*/
 
@@ -51,14 +48,15 @@ void vMotorInit(void)
     DL_TimerG_startCounter(MOTOR_PWM_INST);
 }
 
-void vMotorSetSpeed(int8_t left_speed, int8_t right_speed)
+// Speed: -1024 ~ 1024, 负数表示反转
+void vMotorSetPWM(int8_t left_pwm, int8_t right_pwm)
 {
-    if (left_speed > 0)
+    if (left_pwm > 0)
     {
         DL_GPIO_setPins(GPIO_MOTOR_PORT, GPIO_MOTOR_AIN1_PIN);
         DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_AIN2_PIN);
     }
-    else if (left_speed < 0)
+    else if (left_pwm < 0)
     {
         DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_AIN1_PIN);
         DL_GPIO_setPins(GPIO_MOTOR_PORT, GPIO_MOTOR_AIN2_PIN);
@@ -68,12 +66,12 @@ void vMotorSetSpeed(int8_t left_speed, int8_t right_speed)
         DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_AIN1_PIN | GPIO_MOTOR_AIN2_PIN);
     }
 
-    if (right_speed > 0)
+    if (right_pwm > 0)
     {
         DL_GPIO_setPins(GPIO_MOTOR_PORT, GPIO_MOTOR_BIN1_PIN);
         DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_BIN2_PIN);
     }
-    else if (right_speed < 0)
+    else if (right_pwm < 0)
     {
         DL_GPIO_clearPins(GPIO_MOTOR_PORT, GPIO_MOTOR_BIN1_PIN);
         DL_GPIO_setPins(GPIO_MOTOR_PORT, GPIO_MOTOR_BIN2_PIN);
@@ -85,9 +83,11 @@ void vMotorSetSpeed(int8_t left_speed, int8_t right_speed)
 
     DL_GPIO_setPins(GPIO_MOTOR_PORT, GPIO_MOTOR_STBY_PIN);
 
-    DL_TimerG_setCaptureCompareValue(MOTOR_PWM_INST, abs(left_speed) * MOTOR_MAX_PWM_DUTY / 100,
+    DL_TimerG_setCaptureCompareValue(MOTOR_PWM_INST,
+                                     fClamp(left_pwm, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY),
                                      DL_TIMER_CC_0_INDEX);
-    DL_TimerG_setCaptureCompareValue(MOTOR_PWM_INST, abs(right_speed) * MOTOR_MAX_PWM_DUTY / 100,
+    DL_TimerG_setCaptureCompareValue(MOTOR_PWM_INST,
+                                     fClamp(right_pwm, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY),
                                      DL_TIMER_CC_1_INDEX);
 }
 

@@ -6,6 +6,10 @@
 
 /*-----------------------------------------------------------*/
 
+#define MOTOR_MAX_PWM_DUTY ((uint16_t) (1024 * 30 / 100)) // 30% 占空比对应的计数值
+
+/*-----------------------------------------------------------*/
+
 typedef enum
 {
     ENCODER_LEFT = 0,
@@ -22,7 +26,7 @@ typedef struct
 /*-----------------------------------------------------------*/
 
 void vMotorInit(void);
-void vMotorSetSpeed(int8_t left_speed, int8_t right_speed);
+void vMotorSetPWM(int8_t left_speed, int8_t right_speed);
 void vMotorStop(void);
 
 /*-----------------------------------------------------------*/

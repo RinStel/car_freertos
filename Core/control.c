@@ -17,7 +17,7 @@
 
 #define CONTROL_TASK_PRIORITY 7U
 #define CONTROL_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
-#define CONTROL_LOG_EVERY_N_CYCLES 1U
+#define CONTROL_TASK_FREQUENCY_HZ 50U
 
 /*-----------------------------------------------------------*/
 
@@ -35,7 +35,7 @@ void prvControlTask(void *argument)
     (void) argument;
 
     TickType_t       xLastWakeTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / 50);
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / CONTROL_TASK_FREQUENCY_HZ);
 
     TrackData_t xTrackData = {
         .current_pos         = 0,
@@ -54,7 +54,7 @@ void prvControlTask(void *argument)
         xTaskDelayUntil(&xLastWakeTime, xFrequency);
 
         // Test
-        vMotorSetSpeed(speed, speed);
+        vMotorSetPWM(speed, speed);
         // speed += speed_step;
         // if (speed >= 100)
         // {

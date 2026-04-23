@@ -96,9 +96,8 @@ static void prvMotorEncoderUpdater(void *argument)
 
 void main_MotorEncoderUpdater(void)
 {
-    BaseType_t status =
-        xTaskCreate(prvMotorEncoderUpdater, "MotorEncoder", MOTOR_ENCODER_TASK_STACK_WORDS,
-                    &xMotorEncoderData, MOTOR_ENCODER_TASK_PRIORITY,
-                    &xMotorEncoderUpdaterTaskHandle);
+    BaseType_t status = xTaskCreate(prvMotorEncoderUpdater, "MotorEncoder",
+                                    MOTOR_ENCODER_TASK_STACK_WORDS, &xMotorEncoderData,
+                                    MOTOR_ENCODER_TASK_PRIORITY, &xMotorEncoderUpdaterTaskHandle);
     configASSERT(status == pdPASS);
 }
