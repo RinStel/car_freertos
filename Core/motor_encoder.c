@@ -12,7 +12,7 @@
 /*-----------------------------------------------------------*/
 
 #define MOTOR_ENCODER_TASK_PRIORITY 8U
-#define MOTOR_ENCODER_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 64U)
+#define MOTOR_ENCODER_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
 
 /*-----------------------------------------------------------*/
 

@@ -10,7 +10,7 @@
 
 #define STACK_MONITOR_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 #define STACK_MONITOR_TASK_STACK_WORDS configMINIMAL_STACK_SIZE
-#define STACK_HIGH_THR 50
+#define STACK_HIGH_WATER_THR (30U)
 
 /*-----------------------------------------------------------*/
 
@@ -18,6 +18,7 @@ TaskHandle_t        xMonitorTaskHandle;
 extern TaskHandle_t xControlTaskHandle;
 extern TaskHandle_t xMotorEncoderUpdaterTaskHandle;
 extern TaskHandle_t xHCSR04TaskHandle;
+extern TaskHandle_t xDebugTaskHandle;
 
 /*-----------------------------------------------------------*/
 
@@ -26,6 +27,12 @@ static void prvStackMonitorTask(void *argument);
 
 /*-----------------------------------------------------------*/
 
+static inline bool prvStackLow(TaskHandle_t xTaskHandle)
+{
+    // 通过检查高水位来判断是否可能发生栈溢出，注意这不是绝对的
+    return uxTaskGetStackHighWaterMark(xTaskHandle) < STACK_HIGH_WATER_THR;
+}
+
 static void prvStackMonitorTask(void *argument)
 {
     (void) argument;
@@ -33,10 +40,9 @@ static void prvStackMonitorTask(void *argument)
     for (;;)
     {
         // 可在此处加入对更多任务的栈的监控
-        if (uxTaskGetStackHighWaterMark(NULL) < STACK_HIGH_THR ||
-            uxTaskGetStackHighWaterMark(xControlTaskHandle) < STACK_HIGH_THR ||
-            uxTaskGetStackHighWaterMark(xMotorEncoderUpdaterTaskHandle) < STACK_HIGH_THR ||
-            uxTaskGetStackHighWaterMark(xHCSR04TaskHandle) < STACK_HIGH_THR)
+        if (prvStackLow(xMonitorTaskHandle) || prvStackLow(xControlTaskHandle) ||
+            prvStackLow(xMotorEncoderUpdaterTaskHandle) || prvStackLow(xHCSR04TaskHandle) ||
+            prvStackLow(xDebugTaskHandle))
         {
             DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_STACK_WARNING_LED_PIN);
         }

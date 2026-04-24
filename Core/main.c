@@ -37,9 +37,9 @@
 /*-----------------------------------------------------------*/
 
 #if (configCHECK_FOR_STACK_OVERFLOW)
-volatile TaskHandle_t g_stackOverflowTask = NULL;
-volatile const char * g_stackOverflowTaskName = NULL;
-volatile char g_stackOverflowTaskNameBuf[ configMAX_TASK_NAME_LEN ] = { 0 };
+volatile TaskHandle_t g_stackOverflowTask                                 = NULL;
+volatile const char  *g_stackOverflowTaskName                             = NULL;
+volatile char         g_stackOverflowTaskNameBuf[configMAX_TASK_NAME_LEN] = {0};
 #endif
 
 /*
@@ -58,6 +58,12 @@ int main(void)
 {
     /* Prepare the hardware to run this demo. */
     prvSetupHardware();
+
+    // 启动按键
+    while (DL_GPIO_readPins(GPIOB, GPIO_SWITCH_START_PIN) != 0)
+    {
+    }
+    delay_cycles(CPUCLK_FREQ);
 
     main_StackMonitor();
     main_HCSR04();
@@ -137,14 +143,14 @@ void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
      */
     taskDISABLE_INTERRUPTS();
 
-    g_stackOverflowTask = pxTask;
+    g_stackOverflowTask     = pxTask;
     g_stackOverflowTaskName = pcTaskName;
 
     if (pcTaskName != NULL)
     {
-        for (unsigned int i = 0; i < (unsigned int)(configMAX_TASK_NAME_LEN - 1U); i++)
+        for (unsigned int i = 0; i < (unsigned int) (configMAX_TASK_NAME_LEN - 1U); i++)
         {
-            char c = pcTaskName[i];
+            char c                        = pcTaskName[i];
             g_stackOverflowTaskNameBuf[i] = c;
             if (c == '\0')
             {
