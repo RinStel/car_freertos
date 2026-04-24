@@ -21,9 +21,10 @@ typedef enum
 
 typedef struct
 {
-    int8_t           current_pos;
+    int8_t           current_pos; // 线目前所在的位置，左负右正
     TrackLineState_t status;
-    int8_t          last_turn_direction; // 检测到的最后一次可能的转弯方向，0:无，>0:左，<0:右
+    float_t left_speed_offset; // 左侧速度的叠加偏移，单位是与原速度的比率
+    float_t right_speed_offset;
 
     int8_t           _last_pos;
     TrackLineState_t _last_status;

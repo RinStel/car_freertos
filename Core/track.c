@@ -72,45 +72,27 @@ void vTrackUpdate(TrackData_t *xTrackData)
     uint8_t ucDebounced = prvDebounceUpdate(ucTraceReadData());
 
     // 从中间开始，向两侧寻找最近的有效点
-    int8_t center_idx = GPIO_TRACE_SENSOR_NUM / 2;
-    int8_t index      = center_idx;
-    while (index >= 0)
+    int8_t center_idx  = GPIO_TRACE_SENSOR_NUM / 2;
+    int8_t closest_idx = center_idx;
+    while (closest_idx >= 0)
     {
-        if (ucDebounced & (1 << index))
+        if (ucDebounced & (1 << closest_idx))
         {
             break;
         }
-        else if (ucDebounced & (1 << (GPIO_TRACE_SENSOR_NUM - 1 - index)))
+        else if (ucDebounced & (1 << (GPIO_TRACE_SENSOR_NUM - 1 - closest_idx)))
         {
             // 在另一侧找到有效点
-            index = GPIO_TRACE_SENSOR_NUM - 1 - index;
+            closest_idx = GPIO_TRACE_SENSOR_NUM - 1 - closest_idx;
             break;
         }
-        index--;
-    }
-    if (index < 0)
-    {
-        // 丢线
-        xTrackData->status = TRACK_LINE_LOST;
-
-        if (xTrackData->_last_status != TRACK_LINE_LOST)
-        {
-            if (xTrackData->last_turn_direction > 0)
-            {
-                xTrackData->status = TRACK_LINE_LEFT_TURN;
-            }
-            else if (xTrackData->last_turn_direction < 0)
-            {
-                xTrackData->status = TRACK_LINE_RIGHT_TURN;
-            }
-        }
-        return;
+        closest_idx--;
     }
 
     // 计算并平均距离中心点最近的一团信号
-    int8_t  left_index     = index + 1;
-    int8_t  right_index    = index - 1;
-    int16_t pos_weight_sum = (index - center_idx) * TRACK_SENSOR_SPACE;
+    int8_t  left_index     = closest_idx + 1;
+    int8_t  right_index    = closest_idx - 1;
+    int16_t pos_weight_sum = (closest_idx - center_idx) * TRACK_SENSOR_SPACE;
     while (left_index < GPIO_TRACE_SENSOR_NUM && ucDebounced & (1 << left_index))
     {
         pos_weight_sum += (left_index - center_idx) * TRACK_SENSOR_SPACE;
@@ -127,10 +109,28 @@ void vTrackUpdate(TrackData_t *xTrackData)
     switch (xTrackData->_last_status)
     {
     case TRACK_LINE_LOST:
-        xTrackData->status = TRACK_LINE_NORMAL;
+        if (closest_idx >= 0)
+        {
+            xTrackData->status = TRACK_LINE_NORMAL;
+        }
+        else
+        {
+            xTrackData->status = TRACK_LINE_LOST;
+        }
         break;
     case TRACK_LINE_LEFT:
+        if (closest_idx < 0)
+        {
+            xTrackData->status = TRACK_LINE_LEFT_TURN;
+            break;
+        }
     case TRACK_LINE_RIGHT:
+        if (closest_idx < 0)
+        {
+            xTrackData->status = TRACK_LINE_RIGHT_TURN;
+            break;
+        }
+
         if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
             xTrackData->status = TRACK_LINE_CROSS;
@@ -156,17 +156,28 @@ void vTrackUpdate(TrackData_t *xTrackData)
         }
         break;
     case TRACK_LINE_CROSS:
-        if (left_index != GPIO_TRACE_SENSOR_NUM && right_index != -1 &&
-            abs(xTrackData->current_pos) > TRACK_SENSOR_SPACE)
-        {
-            xTrackData->status = (xTrackData->current_pos < 0) ? TRACK_LINE_LEFT : TRACK_LINE_RIGHT;
-        }
-        else
+        // if (left_index != GPIO_TRACE_SENSOR_NUM && right_index != -1 &&
+        //     abs(xTrackData->current_pos) > TRACK_SENSOR_SPACE)
+        // {
+        //     xTrackData->status = (xTrackData->current_pos < 0) ? TRACK_LINE_LEFT :
+        //     TRACK_LINE_RIGHT;
+        // }
+        if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
             xTrackData->status = TRACK_LINE_CROSS;
         }
+        else
+        {
+            xTrackData->status = TRACK_LINE_NORMAL;
+        }
         break;
     case TRACK_LINE_NORMAL:
+        if (closest_idx < 0)
+        {
+            xTrackData->status = TRACK_LINE_LOST;
+            break;
+        }
+
         if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
         {
             xTrackData->status = TRACK_LINE_CROSS;
@@ -186,17 +197,29 @@ void vTrackUpdate(TrackData_t *xTrackData)
         break;
     }
 
-    if (xTrackData->status == TRACK_LINE_LEFT || xTrackData->status == TRACK_LINE_LEFT_TURN)
+    xTrackData->left_speed_offset  = 0.0f;
+    xTrackData->right_speed_offset = 0.0f;
+    if (xTrackData->status == TRACK_LINE_LEFT_TURN)
     {
-        xTrackData->last_turn_direction = 1;
+        xTrackData->left_speed_offset  = -0.85f;
+        xTrackData->right_speed_offset = 0.6f;
     }
-    else if (xTrackData->status == TRACK_LINE_RIGHT || xTrackData->status == TRACK_LINE_RIGHT_TURN)
+    else if (xTrackData->status == TRACK_LINE_RIGHT_TURN)
     {
-        xTrackData->last_turn_direction = -1;
+        xTrackData->left_speed_offset  = 0.6f;
+        xTrackData->right_speed_offset = -0.85f;
     }
-    else
+    else if (xTrackData->current_pos < 0)
     {
-        xTrackData->last_turn_direction = 0;
+        xTrackData->left_speed_offset =
+            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * -0.9f;
+        xTrackData->right_speed_offset = 0.0f;
+    }
+    else if (xTrackData->current_pos > 0)
+    {
+        xTrackData->left_speed_offset = 0.0f;
+        xTrackData->right_speed_offset =
+            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * 0.9f;
     }
 }
 
