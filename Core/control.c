@@ -9,8 +9,8 @@
 #include "ti_msp_dl_config.h"
 
 #include "hc_sr04.h"
-#include "motor.h"
 #include "motor_encoder.h"
+#include "speed_control.h"
 #include "track.h"
 
 /*-----------------------------------------------------------*/
@@ -44,9 +44,8 @@ void prvControlTask(void *argument)
     };
 
     // Test
-    vMotorInit();
-    int8_t speed = 25;
-    // int8_t speed_step = 1;
+    vMotorSpeedInit();
+    float_t speed_mmps = 100; // 10 cm/s
 
     xLastWakeTime = xTaskGetTickCount();
     for (;;)
@@ -54,18 +53,7 @@ void prvControlTask(void *argument)
         xTaskDelayUntil(&xLastWakeTime, xFrequency);
 
         // Test
-        vMotorSetPWM(speed, speed);
-        // speed += speed_step;
-        // if (speed >= 100)
-        // {
-        //     speed      = 99;
-        //     speed_step = -speed_step;
-        // }
-        // else if (speed <= -100)
-        // {
-        //     speed      = -99;
-        //     speed_step = -speed_step;
-        // }
+        vMotorSpeedSet(speed_mmps, speed_mmps);
 
         vTrackUpdate(&xTrackData);
         printf("%3d, ", xTrackData.current_pos);

@@ -48,7 +48,7 @@ void vMotorInit(void)
     DL_TimerG_startCounter(MOTOR_PWM_INST);
 }
 
-// Speed: -1024 ~ 1024, 负数表示反转
+// Speed: -TIMER_PERIOD ~ TIMER_PERIOD, 负数表示反转
 void vMotorSetPWM(int8_t left_pwm, int8_t right_pwm)
 {
     if (left_pwm > 0)
