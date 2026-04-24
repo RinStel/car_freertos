@@ -2,11 +2,14 @@
 #include "utils.h"
 
 void vPIDInit(PID_Contorl_t *pxPid, float_t kp, float_t ki, float_t kd, float_t min_output,
-              float_t max_output)
+              float_t max_output, float_t integral_decay_factor)
 {
-    pxPid->kp         = kp;
-    pxPid->ki         = ki;
-    pxPid->kd         = kd;
+    pxPid->kp = kp;
+    pxPid->ki = ki;
+    pxPid->kd = kd;
+
+    pxPid->integral_decay_factor = integral_decay_factor; // 建议0.9999f
+
     pxPid->min_output = min_output;
     pxPid->max_output = max_output;
 
@@ -24,7 +27,7 @@ float_t fPIDStep(PID_Contorl_t *pxPid, float_t target, float_t measured)
 {
     float_t error = target - measured;
 
-    pxPid->integral = pxPid->integral * PID_INTEGRAL_DECAY_FACTOR + error;
+    pxPid->integral = pxPid->integral * pxPid->integral_decay_factor + error;
 
     float_t output =
         pxPid->kp * error + pxPid->ki * pxPid->integral + pxPid->kd * (error - pxPid->last_error);
