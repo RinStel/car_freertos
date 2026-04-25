@@ -13,6 +13,7 @@
 
 #define MOTOR_ENCODER_TASK_PRIORITY 8U
 #define MOTOR_ENCODER_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
+#define MOTOR_ENCODER_TASK_FREQUENCY_HZ (250U)
 
 /*-----------------------------------------------------------*/
 
@@ -26,9 +27,6 @@
 
 #define LOW_PASS_FILTER_ALPHA 0.2f
 #define PI (3.14159265358979323846f)
-
-#define xFrequency ((TickType_t) pdMS_TO_TICKS(1000 / 100))
-#define dt_s ((float_t) xFrequency / (float_t) configTICK_RATE_HZ)
 
 MotorEncoderData_t xMotorEncoderData;
 
@@ -51,6 +49,8 @@ static inline float_t prvEncoderCountToDistance_mm(int32_t count)
 
 static inline float_t prvEncoderDeltaCountToSpeed_mmps(int32_t deltaCount)
 {
+    static const float_t dt_s = (float_t) pdMS_TO_TICKS(1000 / MOTOR_ENCODER_TASK_FREQUENCY_HZ) /
+                                (float_t) configTICK_RATE_HZ;
     return prvEncoderCountToDistance_mm(deltaCount) / dt_s;
 }
 
@@ -66,7 +66,8 @@ static void prvMotorEncoderUpdater(void *argument)
     pxMotorEncoderData->left_speed  = 0;
     pxMotorEncoderData->right_speed = 0;
 
-    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency    = pdMS_TO_TICKS(1000 / MOTOR_ENCODER_TASK_FREQUENCY_HZ);
+    TickType_t       xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
         xTaskDelayUntil(&xLastWakeTime, xFrequency);
