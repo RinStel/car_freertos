@@ -33,7 +33,7 @@ typedef struct
 /*-----------------------------------------------------------*/
 
 // 获取处理后的 Track 数据
-void vTrackUpdate(TrackData_t *xTrackData);
+void vTrackUpdate(volatile TrackData_t *xTrackData);
 
 /*-----------------------------------------------------------*/
 

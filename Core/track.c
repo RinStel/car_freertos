@@ -64,7 +64,7 @@ static uint8_t prvDebounceUpdate(uint8_t ucTrace)
     return debounced;
 }
 
-void vTrackUpdate(TrackData_t *xTrackData)
+void vTrackUpdate(volatile TrackData_t *xTrackData)
 {
     xTrackData->_last_pos    = xTrackData->current_pos;
     xTrackData->_last_status = xTrackData->status;
@@ -89,7 +89,7 @@ void vTrackUpdate(TrackData_t *xTrackData)
         closest_idx--;
     }
 
-    // 计算并平均距离中心点最近的一团信号
+    // 计算并平均有效点旁的信号
     int8_t  left_index     = closest_idx + 1;
     int8_t  right_index    = closest_idx - 1;
     int16_t pos_weight_sum = (closest_idx - center_idx) * TRACK_SENSOR_SPACE;
@@ -113,10 +113,6 @@ void vTrackUpdate(TrackData_t *xTrackData)
         {
             xTrackData->status = TRACK_LINE_NORMAL;
         }
-        else
-        {
-            xTrackData->status = TRACK_LINE_LOST;
-        }
         break;
     case TRACK_LINE_LEFT:
         if (closest_idx < 0)
@@ -139,20 +135,12 @@ void vTrackUpdate(TrackData_t *xTrackData)
         {
             xTrackData->status = TRACK_LINE_NORMAL;
         }
-        else
-        {
-            xTrackData->status = xTrackData->_last_status;
-        }
         break;
     case TRACK_LINE_LEFT_TURN:
     case TRACK_LINE_RIGHT_TURN:
         if (abs(xTrackData->current_pos) <= TRACK_SENSOR_SPACE)
         {
             xTrackData->status = TRACK_LINE_NORMAL;
-        }
-        else
-        {
-            xTrackData->status = xTrackData->_last_status;
         }
         break;
     case TRACK_LINE_CROSS:
@@ -162,11 +150,7 @@ void vTrackUpdate(TrackData_t *xTrackData)
         //     xTrackData->status = (xTrackData->current_pos < 0) ? TRACK_LINE_LEFT :
         //     TRACK_LINE_RIGHT;
         // }
-        if (left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1)
-        {
-            xTrackData->status = TRACK_LINE_CROSS;
-        }
-        else
+        if (!(left_index == GPIO_TRACE_SENSOR_NUM && right_index == -1))
         {
             xTrackData->status = TRACK_LINE_NORMAL;
         }
@@ -190,36 +174,38 @@ void vTrackUpdate(TrackData_t *xTrackData)
         {
             xTrackData->status = TRACK_LINE_RIGHT;
         }
-        else
-        {
-            xTrackData->status = TRACK_LINE_NORMAL;
-        }
         break;
     }
 
+    // 计算左右两侧的轮速差
     xTrackData->left_speed_offset  = 0.0f;
     xTrackData->right_speed_offset = 0.0f;
     if (xTrackData->status == TRACK_LINE_LEFT_TURN)
     {
-        xTrackData->left_speed_offset  = -0.85f;
-        xTrackData->right_speed_offset = 0.6f;
+        xTrackData->left_speed_offset  = -0.75f;
+        xTrackData->right_speed_offset = 0.15f;
     }
     else if (xTrackData->status == TRACK_LINE_RIGHT_TURN)
     {
-        xTrackData->left_speed_offset  = 0.6f;
-        xTrackData->right_speed_offset = -0.85f;
+        xTrackData->left_speed_offset  = 0.15f;
+        xTrackData->right_speed_offset = -0.75f;
+    }
+    else if (xTrackData->status == TRACK_LINE_LOST)
+    {
+        xTrackData->left_speed_offset  = -0.75f;
+        xTrackData->right_speed_offset = -0.75f;
     }
     else if (xTrackData->current_pos < 0)
     {
         xTrackData->left_speed_offset =
-            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * -0.9f;
+            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * -0.65f;
         xTrackData->right_speed_offset = 0.0f;
     }
     else if (xTrackData->current_pos > 0)
     {
         xTrackData->left_speed_offset = 0.0f;
         xTrackData->right_speed_offset =
-            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * 0.9f;
+            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * 0.65f;
     }
 }
 
