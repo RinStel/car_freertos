@@ -59,12 +59,6 @@ int main(void)
     /* Prepare the hardware to run this demo. */
     prvSetupHardware();
 
-    // 启动按键
-    while (DL_GPIO_readPins(GPIOB, GPIO_SWITCH_START_PIN) != 0)
-    {
-    }
-    delay_cycles(CPUCLK_FREQ);
-
     main_StackMonitor();
     main_HCSR04();
     main_Control();

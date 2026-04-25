@@ -1,6 +1,5 @@
 #include "stdio.h"
 
-#include "ti/driverlib/dl_uart_main.h"
 #include "ti_msp_dl_config.h"
 
 static char sEchoData;
