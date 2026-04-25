@@ -49,7 +49,7 @@ void vMotorInit(void)
 }
 
 // Speed: -TIMER_PERIOD ~ TIMER_PERIOD, 负数表示反转
-void vMotorSetPWM(int8_t left_pwm, int8_t right_pwm)
+void vMotorSetPWM(int16_t left_pwm, int16_t right_pwm)
 {
     if (left_pwm > 0)
     {

@@ -7,7 +7,7 @@
 /*-----------------------------------------------------------*/
 
 #define TIMER_PERIOD (4000)                                       // PWM周期
-#define MOTOR_MAX_PWM_DUTY ((uint16_t) (50 * TIMER_PERIOD / 100)) // 50% 占空比对应的计数值
+#define MOTOR_MAX_PWM_DUTY ((uint16_t) (80 * TIMER_PERIOD / 100)) // 80% 占空比对应的计数值
 
 /*-----------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ typedef struct
 /*-----------------------------------------------------------*/
 
 void vMotorInit(void);
-void vMotorSetPWM(int8_t left_speed, int8_t right_speed);
+void vMotorSetPWM(int16_t left_speed, int16_t right_speed);
 void vMotorStop(void);
 
 /*-----------------------------------------------------------*/
