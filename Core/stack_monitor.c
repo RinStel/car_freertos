@@ -19,6 +19,7 @@ extern TaskHandle_t xControlTaskHandle;
 extern TaskHandle_t xMotorEncoderUpdaterTaskHandle;
 extern TaskHandle_t xHCSR04TaskHandle;
 extern TaskHandle_t xDebugTaskHandle;
+extern TaskHandle_t xTrackUpdateTaskHandle;
 
 /*-----------------------------------------------------------*/
 
@@ -42,7 +43,7 @@ static void prvStackMonitorTask(void *argument)
         // 可在此处加入对更多任务的栈的监控
         if (prvStackLow(xMonitorTaskHandle) || prvStackLow(xControlTaskHandle) ||
             prvStackLow(xMotorEncoderUpdaterTaskHandle) || prvStackLow(xHCSR04TaskHandle) ||
-            prvStackLow(xDebugTaskHandle))
+            prvStackLow(xDebugTaskHandle) || prvStackLow(xTrackUpdateTaskHandle))
         {
             DL_GPIO_clearPins(GPIO_LEDS_PORT, GPIO_LEDS_STACK_WARNING_LED_PIN);
         }

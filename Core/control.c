@@ -16,15 +16,20 @@
 
 #define CONTROL_TASK_PRIORITY (7U)
 #define CONTROL_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
-#define CONTROL_TASK_FREQUENCY_HZ (100U)
+#define CONTROL_TASK_FREQUENCY_HZ (200U)
+
+#define TRACK_UPDATE_TASK_PRIORITY (8U)
+#define TRACK_UPDATE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
+#define TRACK_UPDATE_TASK_FREQUENCY_HZ (500U)
 
 #define DEBUG_TASK_PRIORITY (tskIDLE_PRIORITY + 2U)
 #define DEBUG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
-#define DEBUG_TASK_FREQUENCY_HZ (100U)
+#define DEBUG_TASK_FREQUENCY_HZ (50U)
 
 /*-----------------------------------------------------------*/
 
 TaskHandle_t xControlTaskHandle;
+TaskHandle_t xTrackUpdateTaskHandle;
 TaskHandle_t xDebugTaskHandle;
 
 volatile TrackData_t xTrackData = {
@@ -36,6 +41,7 @@ volatile TrackData_t xTrackData = {
 
 void main_Control(void);
 void prvControlTask(void *argument);
+void prvTrackUpdateTask(void *argument);
 void prvDebugTask(void *argument);
 
 /*-----------------------------------------------------------*/
@@ -65,8 +71,25 @@ void prvControlTask(void *argument)
         // Test
         vMotorSpeedSet(speed_mmps * (1.0f + xTrackData.left_speed_offset),
                        speed_mmps * (1.0f + xTrackData.right_speed_offset));
-        vTrackUpdate(&xTrackData);
+
         // vMotorSetPWM(4000, 4000);
+        // vMotorSpeedSet(speed_mmps, speed_mmps);
+    }
+}
+
+void prvTrackUpdateTask(void *argument)
+{
+    (void) argument;
+
+    TickType_t       xLastWakeTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / TRACK_UPDATE_TASK_FREQUENCY_HZ);
+
+    xLastWakeTime = xTaskGetTickCount();
+    for (;;)
+    {
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
+
+        vTrackUpdate(&xTrackData);
     }
 }
 
@@ -92,7 +115,7 @@ void prvDebugTask(void *argument)
         // printf("%ld, ", (long) xMotorEncoderData.right_dist);
         // printf("%ld, ", (long) xMotorEncoderData.left_speed);
         // printf("%ld, ", (long) xMotorEncoderData.right_speed);
-        // printf("%d, ", usHCSR04Distance_mm);
+        // // printf("%d, ", usHCSR04Distance_mm);
 
         // switch (xTrackData.status)
         // {
@@ -129,5 +152,9 @@ void main_Control(void)
 
     status = xTaskCreate(prvDebugTask, "Debug", DEBUG_TASK_STACK_WORDS, NULL, DEBUG_TASK_PRIORITY,
                          &xDebugTaskHandle);
+    configASSERT(status == pdPASS);
+
+    status = xTaskCreate(prvTrackUpdateTask, "TrackUpdate", TRACK_UPDATE_TASK_STACK_WORDS, NULL,
+                         TRACK_UPDATE_TASK_PRIORITY, &xTrackUpdateTaskHandle);
     configASSERT(status == pdPASS);
 }
