@@ -8,9 +8,9 @@ static PID_Contorl_t xMotorSpeedPidLeft, xMotorSpeedPidRight;
 void vMotorSpeedInit(void)
 {
     vMotorInit();
-    vPIDInit(&xMotorSpeedPidLeft, 12.5f, 0.9f, 15.0f, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY,
+    vPIDInit(&xMotorSpeedPidLeft, 12.5f, 0.45f, 15.0f, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY,
              0.99995f);
-    vPIDInit(&xMotorSpeedPidRight, 12.5f, 0.9f, 15.0f, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY,
+    vPIDInit(&xMotorSpeedPidRight, 12.5f, 0.45f, 15.0f, -MOTOR_MAX_PWM_DUTY, MOTOR_MAX_PWM_DUTY,
              0.99995f);
 }
 

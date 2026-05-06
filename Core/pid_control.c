@@ -8,7 +8,7 @@ void vPIDInit(PID_Contorl_t *pxPid, float_t kp, float_t ki, float_t kd, float_t 
     pxPid->ki = ki;
     pxPid->kd = kd;
 
-    pxPid->integral_decay_factor = integral_decay_factor; // 建议0.9999f
+    pxPid->integral_decay_factor = integral_decay_factor; // 建议 0.99995f
 
     pxPid->min_output = min_output;
     pxPid->max_output = max_output;
