@@ -4,11 +4,12 @@
 #include "gpio.h"
 #include <stdint.h>
 
+#include "pid_control.h"
 #include "track.h"
 
 /*-----------------------------------------------------------*/
 
-#define DEBOUNCE_THRESHOLD 3
+#define DEBOUNCE_THRESHOLD 2
 
 // 传感器的间距，返回的 current_pos 就是据此推算的，注意单侧传感器数量乘上这个数不能超过127
 #define TRACK_SENSOR_SPACE 20
@@ -25,6 +26,16 @@ typedef struct
     uint8_t count;
     uint8_t state;
 } DebonceState_t;
+
+PID_Contorl_t xTrackPID = {.kp                    = 0.013f,
+                           .ki                    = 0.0f,
+                           .kd                    = 0.01f,
+                           .integral_decay_factor = 1.0f,
+                           .min_output            = -1.0f,
+                           .max_output            = 1.0f,
+                           .last_error            = 0.0f,
+                           .integral              = 0.0f,
+                           .output                = 0.0f};
 
 /*-----------------------------------------------------------*/
 
@@ -180,32 +191,35 @@ void vTrackUpdate(volatile TrackData_t *xTrackData)
     // 计算左右两侧的轮速差
     xTrackData->left_speed_offset  = 0.0f;
     xTrackData->right_speed_offset = 0.0f;
-    if (xTrackData->status == TRACK_LINE_LEFT_TURN)
+    if (xTrackData->status == TRACK_LINE_LOST)
     {
-        xTrackData->left_speed_offset  = -0.75f;
-        xTrackData->right_speed_offset = 0.15f;
+        xTrackData->left_speed_offset  = -0.8f;
+        xTrackData->right_speed_offset = -0.8f;
+        vPIDReset(&xTrackPID);
+    }
+    else if (xTrackData->status == TRACK_LINE_LEFT_TURN)
+    {
+        xTrackData->left_speed_offset  = -1.0f;
+        xTrackData->right_speed_offset = 0.0f;
+        vPIDReset(&xTrackPID);
     }
     else if (xTrackData->status == TRACK_LINE_RIGHT_TURN)
     {
-        xTrackData->left_speed_offset  = 0.15f;
-        xTrackData->right_speed_offset = -0.75f;
+        xTrackData->left_speed_offset  = 0.0f;
+        xTrackData->right_speed_offset = -1.0f;
+        vPIDReset(&xTrackPID);
     }
-    else if (xTrackData->status == TRACK_LINE_LOST)
+    else
     {
-        xTrackData->left_speed_offset  = -0.75f;
-        xTrackData->right_speed_offset = -0.75f;
-    }
-    else if (xTrackData->current_pos < 0)
-    {
-        xTrackData->left_speed_offset =
-            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * -0.65f;
-        xTrackData->right_speed_offset = 0.0f;
-    }
-    else if (xTrackData->current_pos > 0)
-    {
-        xTrackData->left_speed_offset = 0.0f;
-        xTrackData->right_speed_offset =
-            (float_t) xTrackData->current_pos / (center_idx * TRACK_SENSOR_SPACE) * 0.65f;
+        fPIDStep(&xTrackPID, 0, xTrackData->current_pos);
+        if (xTrackPID.output < 0)
+        {
+            xTrackData->left_speed_offset = xTrackPID.output;
+        }
+        else
+        {
+            xTrackData->right_speed_offset = -xTrackPID.output;
+        }
     }
 }
 
